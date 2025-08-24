@@ -1,25 +1,18 @@
+// vite.config.ts
 import react from "@vitejs/plugin-react";
 import tailwind from "tailwindcss";
 import { defineConfig } from "vite";
-import { screenGraphPlugin } from "@animaapp/vite-plugin-screen-graph";
-import path from "node:path";
+import path from "path";
 
-// https://vite.dev/config/
+// ⬅️ CHANGE THIS to your repo name (case-sensitive!)
+const repoName = "sprout_roadmap";
+
 export default defineConfig(({ mode }) => ({
-  plugins: [
-    react(),
-    ...(mode === "development" ? [screenGraphPlugin() as any] : []), // avoid boolean in array; cast to any to dodge type mismatch
-  ],
+  plugins: [react()],
   publicDir: "./static",
-  base: "./",
-  css: {
-    postcss: {
-      plugins: [tailwind()],
-    },
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-    },
-  },
+  // For Project Pages:
+  base: `/${repoName}/`,
+  // For User/Org Pages (alt): base: "/",
+  css: { postcss: { plugins: [tailwind()] } },
+  // resolve: { alias: { "@": path.resolve(process.cwd(), "src") } },
 }));
