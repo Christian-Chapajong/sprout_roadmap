@@ -1,16 +1,18 @@
 import type { Application } from "./data/applications";
-import { APPLICATIONS } from "./data/applications";
 
 type ApplicationsBoxProps = {
   onClose?: () => void;
   onSelectApp?: (app: Application) => void;
+  onAddNewApp?: () => void;
+  applications: Application[];
 };
 
 export const ApplicationsBox = ({
   onClose,
   onSelectApp,
+  onAddNewApp,
+  applications,
 }: ApplicationsBoxProps): JSX.Element => {
-  const applications = APPLICATIONS;
 
   return (
     <div className="w-[393px] h-[686px] flex flex-col bg-white rounded-t-[20px] shadow-[0_0_15px_15px_rgba(0,0,0,0.25)]">
@@ -32,6 +34,23 @@ export const ApplicationsBox = ({
 
       {/* List */}
       <main className="flex flex-col gap-4 w-full px-4 py-4 overflow-y-auto">
+        {/* Add New Application Button */}
+        <button
+          onClick={() => onAddNewApp?.()}
+          className="flex flex-row items-center bg-green-50 border-2 border-dashed border-green-300 rounded-2xl p-3 gap-4 hover:bg-green-100 transition"
+          aria-label="Add new application"
+        >
+          <div className="w-12 h-12 bg-green-200 rounded flex items-center justify-center">
+            <span className="text-green-600 text-2xl font-bold">+</span>
+          </div>
+          <div className="flex flex-col flex-1">
+            <div className="font-bold text-green-700 text-xs">Add New Application</div>
+            <div className="font-normal text-green-600 text-[10px] mt-1">
+              Track a new job application
+            </div>
+          </div>
+        </button>
+
         {applications.map((app) => (
           <button
             key={app.id}

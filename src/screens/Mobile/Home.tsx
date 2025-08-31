@@ -1,25 +1,41 @@
 import { useEffect, useState } from "react";
 import type { Application } from "../../data/applications";
+import { getApplications, addApplication } from "../../data/applications";
 import { ApplicationsBox } from "../../ApplicationsBox";
 import { ChecklistBox } from "../ChecklistBox";
+import { AddApplicationDrawer } from "../../components/AddApplicationDrawer";
 
 export const Home = (): JSX.Element => {
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [applications, setApplications] = useState<Application[]>([]);
+
+  // Load applications on mount
+  useEffect(() => {
+    setApplications(getApplications());
+  }, []);
 
   // Close on Escape if any sheet is open
   useEffect(() => {
-    const open = showApplications || !!selectedApp;
+    const open = showApplications || !!selectedApp || showAddForm;
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (selectedApp) setSelectedApp(null);
+        else if (showAddForm) setShowAddForm(false);
         else setShowApplications(false);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [showApplications, selectedApp]);
+  }, [showApplications, selectedApp, showAddForm]);
+
+  const handleAddApplication = (newApp: Omit<Application, "id">) => {
+    const application = addApplication(newApp);
+    setApplications(getApplications()); // Refresh from storage
+    setShowAddForm(false);
+  };
 
   const growthPathItems = [
     {
@@ -202,11 +218,12 @@ export const Home = (): JSX.Element => {
       </section>
 
       {/* One shared backdrop for any open sheet */}
-      {(showApplications || selectedApp) && (
+      {(showApplications || selectedApp || showAddForm) && (
         <button
           aria-label="Close overlay"
           onClick={() => {
             if (selectedApp) setSelectedApp(null);
+            else if (showAddForm) setShowAddForm(false);
             else setShowApplications(false);
           }}
           className="absolute inset-0 z-[40] bg-black/30"
@@ -217,11 +234,26 @@ export const Home = (): JSX.Element => {
       {showApplications && (
         <div className="absolute inset-x-0 bottom-0 z-[50] flex items-end justify-center">
           <ApplicationsBox
+            applications={applications}
             onClose={() => setShowApplications(false)}
             onSelectApp={(app) => {
               setShowApplications(false);
               setSelectedApp(app);
             }}
+            onAddNewApp={() => {
+              setShowApplications(false);
+              setShowAddForm(true);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Add Application Form bottom sheet */}
+      {showAddForm && (
+        <div className="absolute inset-x-0 bottom-0 z-[55] flex items-end justify-center">
+          <AddApplicationDrawer
+            onClose={() => setShowAddForm(false)}
+            onAddApplication={handleAddApplication}
           />
         </div>
       )}
