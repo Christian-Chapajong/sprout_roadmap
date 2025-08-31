@@ -9,7 +9,8 @@ export type Application = {
   isLarge?: boolean;
 };
 
-export const APPLICATIONS: Application[] = [
+// Default applications data
+const DEFAULT_APPLICATIONS: Application[] = [
   {
     id: 1,
     company: "Amazon",
@@ -84,3 +85,48 @@ export const APPLICATIONS: Application[] = [
     logo: "https://c.animaapp.com/rpS1h8ci/img/image-6@2x.png",
   },
 ];
+
+// Helper function to get applications from localStorage or default
+export const getApplications = (): Application[] => {
+  if (typeof window === 'undefined') return DEFAULT_APPLICATIONS;
+  
+  try {
+    const stored = localStorage.getItem('sprout_applications');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Failed to load applications from localStorage:', error);
+  }
+  
+  return DEFAULT_APPLICATIONS;
+};
+
+// Helper function to save applications to localStorage
+export const saveApplications = (applications: Application[]): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem('sprout_applications', JSON.stringify(applications));
+  } catch (error) {
+    console.warn('Failed to save applications to localStorage:', error);
+  }
+};
+
+// Helper function to add a new application
+export const addApplication = (newApp: Omit<Application, "id">): Application => {
+  const applications = getApplications();
+  const maxId = applications.length > 0 ? Math.max(...applications.map(app => app.id)) : 0;
+  const application: Application = {
+    ...newApp,
+    id: maxId + 1,
+  };
+  
+  const updatedApplications = [...applications, application];
+  saveApplications(updatedApplications);
+  
+  return application;
+};
+
+// Export for backward compatibility
+export const APPLICATIONS = getApplications();
