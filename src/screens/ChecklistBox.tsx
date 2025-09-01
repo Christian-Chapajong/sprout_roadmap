@@ -1,5 +1,6 @@
 import type { Application } from "../data/applications";
 import { CheckSmall } from "../components/CheckSmall";
+import { SproutAIButton } from "../components/SproutAIButton";
 
 type ChecklistBoxProps = {
   app: Application;
@@ -104,11 +105,7 @@ export const ChecklistBox = ({ app, onClose }: ChecklistBoxProps): JSX.Element =
             </div>
 
             {/* CTA */}
-            <button className="w-full h-[38px]">
-              <div className="w-full h-full bg-sprout-green rounded-full flex items-center justify-center">
-                <span className="text-white text-base leading-[22px]">Speak to Sprout AI</span>
-              </div>
-            </button>
+            <SproutAIButton onClick={() => window.open('https://sproutcareers.co.uk/user/ai-companion', "_blank")} />
 
             {/* Stage 3 with sub-stages */}
             <div className="flex items-start gap-3">
